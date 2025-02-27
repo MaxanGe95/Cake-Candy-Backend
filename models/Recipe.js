@@ -8,6 +8,11 @@ const recipeSchema = new mongoose.Schema({
   typ: { type: String, required: true },
   tools: [String],
   unitPrice: { type: Number, required: true },
+  b2bPreis: { type: Number, default: 0 },
+  b2cPreis: { type: Number, default: 0 },
+  istlagerbestand: { type: Number, default: 0 },
+  solllagerbestand: { type: Number, default: 0 },
+  zusatz: { type: String, default: "" },
   ingredients: [
     {
       name: { type: String, required: true },
