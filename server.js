@@ -4,7 +4,7 @@ import cors from "cors";
 import connectDB from "./config/db.js";  // Achte darauf, `.js` hinzuzufügen
 import authRoutes from "./routes/authRoutes.js";  // Achte darauf, `.js` hinzuzufügen
 import zutatenRoutes from "./routes/zutaten.js";  // Achte darauf, `.js` hinzuzufügen
-
+import recipeRoutes from "./routes/recipeRoutes.js"; // Neue Rezept-Routen hinzufügen
 
 dotenv.config();
 connectDB();
@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json()); // JSON-Parser für Requests
 
 app.use("/api/auth", authRoutes); // Authentifizierungsrouten
-
 app.use("/api/zutaten", zutatenRoutes); // Zutatenverwaltung-Routen
+app.use("/api/rezepte", recipeRoutes); // Rezept-Routen hinzufügen
 
 app.listen(process.env.PORT, () => console.log(`Server läuft auf Port ${process.env.PORT} 🚀`));
