@@ -1,33 +1,30 @@
 import express from "express";
-import Recipe from "../models/Recipe.js"; // Stelle sicher, dass das Modell korrekt importiert wird
+import Recipe from "../models/Recipe.js"; // Rezept-Modell, das du in Mongoose definieren solltest
 
 const router = express.Router();
 
-// ✅ GET-Route: Alle Rezepte abrufen
-router.get("/", async (req, res) => {
-  try {
-    const rezepte = await Recipe.find(); // Holt alle Rezepte aus der DB
-    res.status(200).json(rezepte);
-  } catch (error) {
-    console.error("Fehler beim Abrufen der Rezepte:", error);
-    res.status(500).json({ error: "Fehler beim Abrufen der Rezepte" });
-  }
-});
-
-// ✅ POST-Route: Ein neues Rezept erstellen
+// POST-Anfrage zum Erstellen eines neuen Rezepts
 router.post("/", async (req, res) => {
   try {
-    if (!req.body.name || !req.body.zutaten) {
-      return res.status(400).json({ error: "Name und Zutaten sind erforderlich" });
-    }
-
     const recipe = new Recipe(req.body); // Rezept mit den empfangenen Daten erstellen
     await recipe.save(); // Rezept speichern
-    res.status(201).json(recipe);
+    res.status(201).json(recipe); // Erfolgreich zurücksenden
   } catch (error) {
     console.error("Fehler beim Speichern des Rezepts:", error);
-    res.status(500).json({ error: "Fehler beim Speichern des Rezepts" });
+    res.status(400).json({ error: "Fehler beim Speichern des Rezepts" });
   }
 });
+
+// GET-Anfrage zum Abrufen aller Rezepte
+router.get("/", async (req, res) => {
+  try {
+    const recipes = await Recipe.find(); // Alle Rezepte aus der Datenbank abrufen
+    res.status(200).json(recipes); // Rezepte zurücksenden
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Rezepte:", error);
+    res.status(400).json({ error: "Fehler beim Abrufen der Rezepte" });
+  }
+});
+
 
 export default router;
