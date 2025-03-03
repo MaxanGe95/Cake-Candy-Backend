@@ -1,5 +1,5 @@
 import express from "express";
-import Recipe from "../models/Recipe.js"; // Rezept-Modell, das du in Mongoose definieren solltest
+import Recipe from "../models/Recipe.js"; 
 
 const router = express.Router();
 
