@@ -13,9 +13,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-
-
-
 // GET-Route für das Abrufen von Gehältern
 router.get("/", async (req, res) => {
   try {

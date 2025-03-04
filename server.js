@@ -6,6 +6,7 @@ import authRoutes from "./routes/authRoutes.js";
 import zutatenRoutes from "./routes/zutaten.js";  
 import recipeRoutes from "./routes/recipeRoutes.js"; 
 import salaryRoutes from "./routes/salaryRoutes.js";
+import inventoryRoutes from "./routes/inventoryRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -18,5 +19,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/zutaten", zutatenRoutes); 
 app.use("/api/rezepte", recipeRoutes); 
 app.use("/api/salaries", salaryRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 app.listen(process.env.PORT, () => console.log(`Server läuft auf Port ${process.env.PORT} 🚀`));
