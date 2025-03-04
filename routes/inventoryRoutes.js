@@ -3,12 +3,11 @@ import Inventory from "../models/Inventory.js";
 
 const router = express.Router();
 
-// Route zum Speichern von Inventardaten
+// POST-Route zum Speichern von Inventardaten
 router.post("/", async (req, res) => {
   try {
     const inventoryData = req.body;
 
-    // Alle neuen Daten in der Datenbank speichern
     for (const item of inventoryData) {
       const newInventoryItem = new Inventory({
         itemName: item.itemName,
@@ -22,6 +21,17 @@ router.post("/", async (req, res) => {
   } catch (error) {
     console.error("Fehler beim Speichern der Inventardaten:", error);
     res.status(500).json({ message: "Fehler beim Speichern der Inventardaten" });
+  }
+});
+
+// GET-Route zum Abrufen von Inventardaten
+router.get("/", async (req, res) => {
+  try {
+    const inventoryItems = await Inventory.find(); // Alle Inventaritems abfragen
+    res.status(200).json(inventoryItems); // Rückgabe der Inventardaten
+  } catch (error) {
+    console.error("Fehler beim Abrufen der Inventardaten:", error);
+    res.status(500).json({ message: "Fehler beim Abrufen der Inventardaten" });
   }
 });
 
