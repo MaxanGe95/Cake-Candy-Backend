@@ -20,6 +20,8 @@ const recipeSchema = new mongoose.Schema({
       ekPreis: { type: Number, required: true },
     },
   ],
+  productImage: { type: String, default: "" }, // Hier wird das Bild gespeichert (z.B. URL oder Pfad)
+  productDescription: { type: String, default: "" }, // Beschreibung des Produkts
 });
 
 const Recipe = mongoose.model("Recipe", recipeSchema);
