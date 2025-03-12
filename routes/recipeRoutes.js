@@ -1,58 +1,79 @@
 import express from "express";
-import Recipe from "../models/Recipe.js"; 
+import Recipe from "../models/Recipe.js";
+import { Zutat } from "../models/Zutat.js"; // Import des Zutat-Modells
+import { convertRecipeToIngredient } from "../helpers/converter.js"; // Import der Konvertierungsfunktion
 
 const router = express.Router();
 
-// POST-Anfrage zum Erstellen eines neuen Rezepts
+// 📌 Rezept erstellen + automatische Umwandlung in eine Zutat
 router.post("/", async (req, res) => {
   try {
-    const recipe = new Recipe(req.body); // Rezept mit den empfangenen Daten erstellen
-    await recipe.save(); // Rezept speichern
-    res.status(201).json(recipe); // Erfolgreich zurücksenden
+    const recipe = new Recipe(req.body);
+    await recipe.save();
+
+    // Automatische Konvertierung in eine Zutat
+    const zutatData = convertRecipeToIngredient(recipe);
+    const zutat = new Zutat(zutatData);
+    await zutat.save();
+
+    res.status(201).json({ message: "Rezept erstellt und in Zutat umgewandelt", recipe, zutat });
   } catch (error) {
     console.error("Fehler beim Speichern des Rezepts:", error);
     res.status(400).json({ error: "Fehler beim Speichern des Rezepts" });
   }
 });
 
-// GET-Anfrage zum Abrufen aller Rezepte
+// 📌 Alle Rezepte abrufen
 router.get("/", async (req, res) => {
   try {
-    const recipes = await Recipe.find(); // Alle Rezepte aus der Datenbank abrufen
-    res.status(200).json(recipes); // Rezepte zurücksenden
+    const recipes = await Recipe.find();
+    res.status(200).json(recipes);
   } catch (error) {
     console.error("Fehler beim Abrufen der Rezepte:", error);
     res.status(400).json({ error: "Fehler beim Abrufen der Rezepte" });
   }
 });
 
-
-// 📌 Rezept aktualisieren
+// 📌 Rezept aktualisieren + Zutat aktualisieren
 router.put("/:id", async (req, res) => {
   try {
-    // Zutat anhand der ID suchen
-    const updatetRezept = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    // Rezept aktualisieren
+    const updatedRecipe = await Recipe.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedRecipe) return res.status(404).json({ message: "Rezept nicht gefunden" });
 
-    // Falls die Zutat nicht existiert, 404 zurückgeben
-    if (!updatetRezept) {
-      return res.status(404).json({ message: "Rezept nicht gefunden" });
+    // Zutat basierend auf dem Rezept finden und aktualisieren
+    const zutatData = convertRecipeToIngredient(updatedRecipe);
+    const updatedZutat = await Zutat.findOneAndUpdate({ name: updatedRecipe.name }, zutatData, { new: true });
+    
+    if (!updatedZutat) {
+      // Falls keine Zutat existiert, eine neue Zutat erstellen
+      const newZutat = new Zutat(zutatData);
+      await newZutat.save();
     }
 
-    res.json(updatetRezept);
+    res.json({ message: "Rezept und Zutat aktualisiert", updatedRecipe, updatedZutat });
   } catch (error) {
-    res.status(400).json({ message: "Fehler beim Aktualisieren der Rezept" });
+    console.error("Fehler beim Aktualisieren des Rezepts:", error);
+    res.status(400).json({ message: "Fehler beim Aktualisieren des Rezepts" });
   }
 });
 
 // 📌 Rezept löschen
 router.delete("/:id", async (req, res) => {
   try {
+    const recipe = await Recipe.findById(req.params.id);
+    if (!recipe) return res.status(404).json({ message: "Rezept nicht gefunden" });
+
     await Recipe.findByIdAndDelete(req.params.id);
-    res.json({ message: "Rezept gelöscht" });
+
+    // Zutat löschen, die mit dem Rezept verbunden ist
+    await Zutat.findOneAndDelete({ name: recipe.name });
+
+    res.json({ message: "Rezept und Zutat gelöscht" });
   } catch (error) {
-    res.status(400).json({ message: "Fehler beim Löschen der Rezept" });
+    console.error("Fehler beim Löschen des Rezepts:", error);
+    res.status(400).json({ message: "Fehler beim Löschen des Rezepts" });
   }
 });
-
 
 export default router;
