@@ -11,7 +11,7 @@ router.post("/", async (req, res) => {
     for (const item of inventoryData) {
       await Inventory.findOneAndUpdate(
         { itemName: item.itemName }, // Suchkriterium (Artikelname)
-        { $inc: { quantity: item.quantity } }, // Menge hinzufügen/erhöhen
+        { $set: { quantity: item.quantity } }, // Menge direkt ersetzen
         { upsert: true, new: true } // Falls nicht vorhanden, neu erstellen
       );
     }
@@ -22,6 +22,7 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: "Fehler beim Speichern der Inventardaten" });
   }
 });
+
 
 
 // GET-Route zum Abrufen von Inventardaten
