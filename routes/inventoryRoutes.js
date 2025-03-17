@@ -9,20 +9,20 @@ router.post("/", async (req, res) => {
     const inventoryData = req.body;
 
     for (const item of inventoryData) {
-      const newInventoryItem = new Inventory({
-        itemName: item.itemName,
-        quantity: item.quantity,
-      });
-
-      await newInventoryItem.save();
+      await Inventory.findOneAndUpdate(
+        { itemName: item.itemName }, // Suchkriterium (Artikelname)
+        { $inc: { quantity: item.quantity } }, // Menge hinzufügen/erhöhen
+        { upsert: true, new: true } // Falls nicht vorhanden, neu erstellen
+      );
     }
 
-    res.status(200).json({ message: "Inventardaten erfolgreich gespeichert" });
+    res.status(200).json({ message: "Inventardaten erfolgreich gespeichert oder aktualisiert" });
   } catch (error) {
     console.error("Fehler beim Speichern der Inventardaten:", error);
     res.status(500).json({ message: "Fehler beim Speichern der Inventardaten" });
   }
 });
+
 
 // GET-Route zum Abrufen von Inventardaten
 router.get("/", async (req, res) => {
