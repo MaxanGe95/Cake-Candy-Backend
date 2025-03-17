@@ -88,7 +88,7 @@ const __dirname = path.dirname(__filename);
 // Bild soll vorher komprimiert werden
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
+//speichert das Bild im Backend.
 router.post("/:id/image", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
