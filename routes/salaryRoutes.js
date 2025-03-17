@@ -6,10 +6,20 @@ const router = express.Router();
 // POST-Route zum Speichern oder Aktualisieren von Gehältern
 router.post("/", async (req, res) => {
   try {
-    const salaries = await Salary.insertMany(req.body);
-    res.status(201).json(salaries);
+    const salaryData = req.body;
+
+    for (const salary of salaryData) {
+      await Salary.findOneAndUpdate(
+        { date: salary.date, employeeName: salary.employeeName, accountNumber: salary.accountNumber }, // Eindeutige Kriterien
+        { $set: { workingHours: salary.workingHours, salary: salary.salary } }, // Daten aktualisieren
+        { upsert: true, new: true } // Falls nicht vorhanden, neu erstellen
+      );
+    }
+
+    res.status(200).json({ message: "Gehälter erfolgreich gespeichert oder aktualisiert" });
   } catch (error) {
-    res.status(500).json({ message: "Fehler beim Speichern", error });
+    console.error("Fehler beim Speichern der Gehälter:", error);
+    res.status(500).json({ message: "Fehler beim Speichern der Gehälter", error });
   }
 });
 
