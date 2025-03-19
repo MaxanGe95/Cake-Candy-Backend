@@ -38,11 +38,18 @@ export const registerUser = async (req, res) => {
       { expiresIn: "7d" }
     );
 
+    // Token als HttpOnly-Cookie setzen
+    res.cookie("token", token, {
+      httpOnly: true,  // Schutz vor XSS
+      secure: process.env.NODE_ENV === "production", // Nur HTTPS in Produktion
+      sameSite: "strict", // Schutz vor CSRF
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Tage gültig
+    });
+
     // Erfolgreiche Antwort zurück an den Client
     res.status(201).json({
       message: "Registrierung erfolgreich",
-      user: { id: newUser._id, username: newUser.username, email: newUser.email },
-      token,
+      user: { id: newUser._id, username: newUser.username, email: newUser.email }
     });
   } catch (error) {
     console.error(error);

@@ -13,8 +13,14 @@ import companyFutterplatzRoutes from "./routes/companyFutterplatzRoutes.js";
 dotenv.config();
 connectDB();
 
+// requests mit cookies vom frontend erlauben
+var corsOptions = {
+    origin: 'http://localhost:5173',
+    credentials: true
+}
+
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 
 app.use("/api/auth", authRoutes); 
