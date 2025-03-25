@@ -6,6 +6,7 @@ const salarySchema = new mongoose.Schema({
   accountNumber: String,
   workingHours: Number,
   salary: Number,
+  status: String,
 });
 
 const Salary = mongoose.model('Salary', salarySchema);
