@@ -1,4 +1,4 @@
-import User from "../models/User.js";  // Achte auf die .js Endung
+import User from "../models/User.js"; // Achte auf die .js Endung
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -32,15 +32,13 @@ export const registerUser = async (req, res) => {
     await newUser.save();
 
     // JWT-Token erstellen
-    const token = jwt.sign(
-      { id: newUser._id }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: "7d" }
-    );
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     // Token als HttpOnly-Cookie setzen
     res.cookie("token", token, {
-      httpOnly: true,  // Schutz vor XSS
+      httpOnly: true, // Schutz vor XSS
       secure: process.env.NODE_ENV === "production", // Nur HTTPS in Produktion
       sameSite: "strict", // Schutz vor CSRF
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Tage gültig
@@ -49,7 +47,12 @@ export const registerUser = async (req, res) => {
     // Erfolgreiche Antwort zurück an den Client
     res.status(201).json({
       message: "Registrierung erfolgreich",
-      user: { id: newUser._id, username: newUser.username, email: newUser.email }
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        employeeName: newUser.employeeName,
+      },
     });
   } catch (error) {
     console.error(error);

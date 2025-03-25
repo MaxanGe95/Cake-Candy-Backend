@@ -11,30 +11,40 @@ router.post("/", async (req, res) => {
     for (const user of userData) {
       await User.findOneAndUpdate(
         { email: user.email }, // Eindeutige Kriterien
-        { $set: { name: user.name, role: user.role } }, // Daten aktualisieren
+        {
+          $set: {
+            name: user.name,
+            role: user.role,
+            employeeName: user.employeeName,
+          },
+        }, // Daten aktualisieren
         { upsert: true, new: true }
       );
     }
 
-    res.status(200).json({ message: "Benutzerdaten erfolgreich gespeichert oder aktualisiert" });
+    res
+      .status(200)
+      .json({
+        message: "Benutzerdaten erfolgreich gespeichert oder aktualisiert",
+      });
   } catch (error) {
     console.error("Fehler beim Speichern der Benutzerdaten:", error);
-    res.status(500).json({ message: "Fehler beim Speichern der Benutzerdaten", error });
+    res
+      .status(500)
+      .json({ message: "Fehler beim Speichern der Benutzerdaten", error });
   }
 });
-
-
 
 // PUT-Route zum Aktualisieren von Benutzerdaten
 router.put("/:id", async (req, res) => {
   const userId = req.params.id;
-  const { username, role, email } = req.body;
+  const { username, role, email, employeeName } = req.body;
 
   try {
     // Benutzerdaten nach der ID suchen und aktualisieren
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { $set: { username, role, email } }, // Nur name und role aktualisieren
+      { $set: { username, role, email, employeeName } }, // Nur name und role aktualisieren
       { new: true } // Gebe den aktualisierten Benutzer zurück
     );
 
@@ -45,7 +55,9 @@ router.put("/:id", async (req, res) => {
     res.status(200).json(updatedUser);
   } catch (error) {
     console.error("Fehler beim Aktualisieren der Benutzerdaten:", error);
-    res.status(500).json({ message: "Fehler beim Aktualisieren der Benutzerdaten", error });
+    res
+      .status(500)
+      .json({ message: "Fehler beim Aktualisieren der Benutzerdaten", error });
   }
 });
 
@@ -69,7 +81,9 @@ router.get("/", async (req, res) => {
     const users = await User.find();
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: "Fehler beim Abrufen der Benutzer", error });
+    res
+      .status(500)
+      .json({ message: "Fehler beim Abrufen der Benutzer", error });
   }
 });
 
