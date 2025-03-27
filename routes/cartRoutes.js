@@ -11,6 +11,7 @@ router.post("/buy", authMiddleware, async (req, res) => {
     const user = await User.findById(userId);
 
     // TODO Bestand Reduzieren, Rechnung erstellen etc.
+    
     console.log(
       `Nutzer ${user.username} mit ${
         user.id
@@ -24,5 +25,5 @@ router.post("/buy", authMiddleware, async (req, res) => {
       .json({ message: "Fehler beim Kaufen des Warenkorbs", error });
   }
 });
-
+ 
 export default router;
