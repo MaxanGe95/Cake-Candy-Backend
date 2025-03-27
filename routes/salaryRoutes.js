@@ -32,5 +32,14 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Fehler beim Abrufen der Gehälter", error });
   }
 });
+// GET-Route für das Abrufen von Gehältern
+router.get("/employeeNames", async (req, res) => {
+  try {
+    const employeeNames = await Salary.distinct("employeeName");
+    res.status(200).json(employeeNames);
+  } catch (error) {
+    res.status(500).json({ message: "Fehler beim Abrufen der Mitarbeiternamen", error });
+  }
+});
 
 export default router;
